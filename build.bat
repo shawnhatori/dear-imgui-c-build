@@ -45,10 +45,6 @@ for %%g in (dx11
 ) do (
     copy ..\imgui\backends\imgui_impl_%%g* . > nul
     python ..\dear_bindings\dear_bindings.py --backend imgui_impl_%%g.h -o cimgui_impl_%%g
-    if not exist %%g\ (
-        mkdir %%g\
-    )
-    copy ..\imgui\imconfig.h %%g\ > nul
 
     rem -std: Set language standard to C++14
     rem -I: Set include dir path
@@ -62,18 +58,20 @@ for %%g in (dx11
 
     rem -MTd: Statically link debug MSVC CRT
     cl imgui*.cpp cimgui*.cpp !compiler_flags! -MTd
-    lib *.obj -nologo -OUT:%%g\cimgui_win32_%%g_debug.lib
+    lib *.obj -nologo -OUT:cimgui_win32_%%g_debug.lib
 
     rem -MT: Statically link MSVC CRT
     cl imgui*.cpp cimgui*.cpp !compiler_flags! -MT
-    lib *.obj -nologo -OUT:%%g\cimgui_win32_%%g.lib
+    lib *.obj -nologo -OUT:cimgui_win32_%%g.lib
 
-    copy cimgui*.h %%g\ > nul
-    copy cimgui*.json %%g\ > nul
     del /q imgui_impl_%%g*
-    del /q cimgui_impl_%%g*
+    del /q cimgui_impl_%%g*.cpp
 )
-del /q *.*
+del /q *.obj
+del /q *.cpp
+del /q *.json
+del /q imgui*.*
+del /q imstb*.*
 popd
 
 endlocal
