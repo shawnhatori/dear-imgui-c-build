@@ -20,6 +20,6 @@ build
 ```
 The build script will clone the required projects (or update them if they
 already exist), generate the bindings, and run the compiler for all backend
-permutations. The resulting `build` directory contains a subfolder for each
-graphics API, containing the `.h` headers to include and the `.lib` static
-library to link against in a C application.
+permutations. For each graphics API, the resulting `build` directory contains
+the `.h` headers to include and the `.lib` static library to link against in a
+C application.
