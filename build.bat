@@ -2,36 +2,53 @@
 
 setlocal enabledelayedexpansion
 
+rem -l: Build based on the local state of the repositories (no git)
+set local_build=
+:args
+if "%1" neq "" (
+    if "%1"=="-l" (
+        set local_build=1
+    )
+    SHIFT
+    GOTO :args
+)
+
 if not exist build\ (
     mkdir build\
 )
 
-if not exist imgui\ (
-    git clone git@github.com:ocornut/imgui.git
-) else (
-    pushd imgui\
-    git pull > nul
-    popd
+if not defined local_build (
+    if not exist imgui\ (
+        git clone git@github.com:ocornut/imgui.git
+    ) else (
+        pushd imgui\
+        git pull > nul
+        popd
+    )
 )
 copy imgui\*.cpp build\ > nul
 copy imgui\*.h build\ > nul
 copy imgui\backends\imgui_impl_win32* build\ > nul
 
-if not exist dear_bindings\ (
-    git clone git@github.com:dearimgui/dear_bindings.git
-) else (
-    pushd dear_bindings\
-    git pull > nul
-    popd
+if not defined local_build (
+    if not exist dear_bindings\ (
+        git clone git@github.com:dearimgui/dear_bindings.git
+    ) else (
+        pushd dear_bindings\
+        git pull > nul
+        popd
+    )
 )
 
 rem NOTE: PLY is a required dependency of Dear Bindings.
-if not exist ply\ (
-    git clone git@github.com:dabeaz/ply.git
-) else (
-    pushd ply\
-    git pull > nul
-    popd
+if not defined local_build (
+    if not exist ply\ (
+        git clone git@github.com:dabeaz/ply.git
+    ) else (
+        pushd ply\
+        git pull > nul
+        popd
+    )
 )
 xcopy /s /i /e /y ply\src\ply dear_bindings\ply > nul
 
