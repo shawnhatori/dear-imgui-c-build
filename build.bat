@@ -76,15 +76,16 @@ for %%g in (dx11
     rem -MTd: Statically link debug MSVC CRT
     cl imgui*.cpp cimgui*.cpp !compiler_flags! -MTd
     lib *.obj -nologo -OUT:cimgui_win32_%%g_debug.lib
+    del /q *.obj
 
     rem -MT: Statically link MSVC CRT
     cl imgui*.cpp cimgui*.cpp !compiler_flags! -MT
     lib *.obj -nologo -OUT:cimgui_win32_%%g.lib
+    del /q *.obj
 
     del /q imgui_impl_%%g*
     del /q cimgui_impl_%%g*.cpp
 )
-del /q *.obj
 del /q *.cpp
 del /q *.json
 del /q imgui*.*
