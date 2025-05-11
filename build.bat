@@ -2,6 +2,8 @@
 
 setlocal enabledelayedexpansion
 
+set project_dir=%~dp0
+
 rem -l: Build based on the local state of the repositories (no git)
 set local_build=
 :args
@@ -13,28 +15,32 @@ if "%1" neq "" (
     GOTO :args
 )
 
-if not exist build\ (
-    mkdir build\
+if not exist !project_dir!\build\ (
+	mkdir !project_dir!\build\
 )
 
 if not defined local_build (
-    if not exist imgui\ (
+    if not exist !project_dir!\imgui\ (
+        pushd !project_dir!
         git clone git@github.com:ocornut/imgui.git
+        popd
     ) else (
-        pushd imgui\
+        pushd !project_dir!\imgui\
         git pull > nul
         popd
     )
 )
-copy imgui\*.cpp build\ > nul
-copy imgui\*.h build\ > nul
-copy imgui\backends\imgui_impl_win32* build\ > nul
+copy !project_dir!\imgui\*.cpp !project_dir!\build\ > nul
+copy !project_dir!\imgui\*.h !project_dir!\build\ > nul
+copy !project_dir!\imgui\backends\imgui_impl_win32* !project_dir!\build\ > nul
 
 if not defined local_build (
-    if not exist dear_bindings\ (
+    if not exist !project_dir!\dear_bindings\ (
+        pushd !project_dir!
         git clone git@github.com:dearimgui/dear_bindings.git
+        popd
     ) else (
-        pushd dear_bindings\
+        pushd !project_dir!\dear_bindings\
         git pull > nul
         popd
     )
@@ -43,16 +49,18 @@ if not defined local_build (
 rem NOTE: PLY is a required dependency of Dear Bindings.
 if not defined local_build (
     if not exist ply\ (
+        pushd !project_dir!
         git clone git@github.com:dabeaz/ply.git
+        popd
     ) else (
-        pushd ply\
+        pushd !project_dir!\ply\
         git pull > nul
         popd
     )
 )
-xcopy /s /i /e /y ply\src\ply dear_bindings\ply > nul
+xcopy /s /i /e /y !project_dir!\ply\src\ply !project_dir!\dear_bindings\ply > nul
 
-pushd build
+pushd !project_dir!\build
 python ..\dear_bindings\dear_bindings.py imgui.h -o cimgui
 python ..\dear_bindings\dear_bindings.py --backend imgui_impl_win32.h -o cimgui_impl_win32
 for %%g in (dx11
