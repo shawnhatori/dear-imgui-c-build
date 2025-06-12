@@ -1,18 +1,16 @@
 # Dear ImGui C Build
-Dear ImGui C Build gets the latest versions of
-[dear_imgui](https://github.com/ocornut/imgui) and
-[dear_bindings](https://github.com/dearimgui/dear_bindings), and uses them to
-generate C bindings for Dear ImGui. These bindings, along with Dear ImGui
-source, are then compiled into a C-compatible static library. Unique static
-libraries are created for the Win32 platform backend with each of the DX11,
-DX12, OpenGL3, and Vulkan graphics API backends, as well as debug and
-production (i.e. `-MTd` vs `-MT`).
+Dear ImGui C Build uses [dear_imgui](https://github.com/ocornut/imgui) and
+[dear_bindings](https://github.com/dearimgui/dear_bindings) to generate C
+bindings for Dear ImGui. These bindings, along with Dear ImGui source, are then
+compiled into a C-compatible static library. Unique static libraries are
+created for the Win32 platform backend with each of the DX11, DX12, and Vulkan
+graphics API backends, as well as debug and production (i.e. `-MTd` vs `-MT`).
 
 ## Requirements
 * Git
-* Python 3.8x+ (required for Dear Bindings)
 * Microsoft Visual C++ (MSVC)
-* Optional: Vulkan SDK (required for Vulkan backend)
+* Python 3.10+ (required for Dear Bindings)
+* Vulkan SDK (required for Vulkan backend)
 
 ## Usage
 ```

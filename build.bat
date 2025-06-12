@@ -24,11 +24,10 @@ if not defined local_build (
         pushd !project_dir!
         git clone git@github.com:ocornut/imgui.git
         popd
-    ) else (
-        pushd !project_dir!\imgui\
-        git pull > nul
-        popd
     )
+    pushd !project_dir!\imgui\
+    git checkout tags/v1.91.9b
+    popd
 )
 copy !project_dir!\imgui\*.cpp !project_dir!\build\ > nul
 copy !project_dir!\imgui\*.h !project_dir!\build\ > nul
@@ -52,24 +51,22 @@ if not defined local_build (
         pushd !project_dir!
         git clone git@github.com:dabeaz/ply.git
         popd
-    ) else (
-        pushd !project_dir!\ply\
-        git pull > nul
-        popd
     )
+    pushd !project_dir!\ply\
+    git checkout tags/3.11
+    popd
 )
-xcopy /s /i /e /y !project_dir!\ply\src\ply !project_dir!\dear_bindings\ply > nul
+xcopy /s /i /e /y !project_dir!\ply\ply !project_dir!\dear_bindings\ply > nul
 
 pushd !project_dir!\build
-python ..\dear_bindings\dear_bindings.py imgui.h -o cimgui
-python ..\dear_bindings\dear_bindings.py --backend imgui_impl_win32.h -o cimgui_impl_win32
+python ..\dear_bindings\dear_bindings.py imgui.h --imconfig-path imconfig.h -o dcimgui
+python ..\dear_bindings\dear_bindings.py imgui_impl_win32.h --backend --include imgui.h --imconfig-path imconfig.h -o dcimgui_impl_win32
 for %%g in (dx11
             dx12
-            opengl3
             vulkan
 ) do (
     copy ..\imgui\backends\imgui_impl_%%g* . > nul
-    python ..\dear_bindings\dear_bindings.py --backend imgui_impl_%%g.h -o cimgui_impl_%%g
+    python ..\dear_bindings\dear_bindings.py imgui_impl_%%g.h --backend --include imgui.h --imconfig-path imconfig.h -o dcimgui_impl_%%g
 
     rem -std: Set language standard to C++14
     rem -I: Set include dir path
@@ -82,17 +79,17 @@ for %%g in (dx11
     set compiler_flags=-std:c++14 -I!VULKAN_SDK!\Include\ -O2 -Oi -EHa -GR- -c -nologo
 
     rem -MTd: Statically link debug MSVC CRT
-    cl imgui*.cpp cimgui*.cpp !compiler_flags! -MTd
-    lib *.obj -nologo -OUT:cimgui_win32_%%g_debug.lib
+    cl imgui*.cpp dcimgui*.cpp !compiler_flags! -MTd
+    lib *.obj -nologo -OUT:dcimgui_win32_%%g_debug.lib
     del /q *.obj
 
     rem -MT: Statically link MSVC CRT
-    cl imgui*.cpp cimgui*.cpp !compiler_flags! -MT
-    lib *.obj -nologo -OUT:cimgui_win32_%%g.lib
+    cl imgui*.cpp dcimgui*.cpp !compiler_flags! -MT
+    lib *.obj -nologo -OUT:dcimgui_win32_%%g.lib
     del /q *.obj
 
     del /q imgui_impl_%%g*
-    del /q cimgui_impl_%%g*.cpp
+    del /q dcimgui_impl_%%g*.cpp
 )
 del /q *.cpp
 del /q *.json
